@@ -54,5 +54,5 @@
     },
     "extensions": [".ts"]
   },
-  "ignorePatterns": ["vite.config.ts"]
+  "ignorePatterns": ["webpack.config.ts"]
 }

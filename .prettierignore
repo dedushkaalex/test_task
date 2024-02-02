@@ -1,7 +1,7 @@
 dist
 node_modules
 .husky
-vite.config.ts
+webpack.config.ts
 .lintstagedrc
 public
 .gitkeep

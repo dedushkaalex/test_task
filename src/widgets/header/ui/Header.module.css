@@ -1,0 +1,30 @@
+
+
+.header__row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  max-height: 18.5rem;
+  /* overflow: hidden; */
+}
+
+.header__logo {
+  color: #000;
+  text-shadow: 0 0.4rem 0.4rem rgba(0, 0, 0, 0.25);
+  font-style: normal;
+  line-height: normal;
+  margin-left: 1.5rem;
+}
+
+.header__logo--big {
+  font-size: 9.6rem;
+  text-transform: uppercase;
+}
+
+.header__logo--small {
+  font-size: 2rem;
+  font-weight: 300;
+  width: 8.7rem;
+  display: inline-block;
+  margin-left: 1rem;
+}
