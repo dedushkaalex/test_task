@@ -1,11 +1,13 @@
-
+.header {
+  padding: 2.1rem 0;
+}
 
 .header__row {
   display: flex;
   align-items: start;
   justify-content: space-between;
   max-height: 18.5rem;
-  /* overflow: hidden; */
+  flex-wrap: wrap;
 }
 
 .header__logo {
@@ -27,4 +29,28 @@
   width: 8.7rem;
   display: inline-block;
   margin-left: 1rem;
+}
+
+.header__row--right {
+  position: relative;
+  z-index: -1;
+}
+
+@media screen and (max-width: 573px) {
+  .header__row--right {
+    display: none;
+  }
+
+  .header__row {
+    max-height: none;
+    justify-content: center;
+  }
+
+  .container {
+    padding: 0 11px;
+  }
+
+  .header__logo {
+    margin-left: 0;
+  }
 }

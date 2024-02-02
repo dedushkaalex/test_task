@@ -55,8 +55,8 @@ export const Select = ({ options, selected, onClick, onClose, placeholder }: Sel
       </div>
       {isOpen && (
         <ul className={styles['select-options']}>
-          {options.map((option) => (
-            <Option key={option.value} option={option} onClick={handleOptionClick} />
+          {options.map((option, index) => (
+            <Option key={index} option={option} onClick={handleOptionClick} />
           ))}
         </ul>
       )}

@@ -1,6 +1,9 @@
-/* .content {
-  padding-top: 15px;
+.app {
   height: 100dvh;
   display: flex;
   flex-direction: column;
-} */
+}
+
+.content {
+  flex-grow: 2;
+}
