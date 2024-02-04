@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { MouseEventHandler, useEffect, useRef, useState } from 'react';
+import { MouseEventHandler, memo, useCallback, useEffect, useRef, useState } from 'react';
 import Arrow from './chevron-down.svg';
 import cn from 'classnames';
 
@@ -8,58 +8,75 @@ import cn from 'classnames';
 import styles from './Select.module.css';
 import { OptionItem } from '../model/types';
 import { Option } from './Option';
+import { useOutsideClick } from 'shared/lib/hooks/useOutsideClick';
 
 interface SelectProps {
-  selected: OptionItem | null;
+  selectedItem: OptionItem | null;
   options: OptionItem[];
   placeholder?: string;
   onClick?: (selected: OptionItem['value']) => void;
-  onClose?: () => void;
 }
 
-export const Select = ({ options, selected, onClick, onClose, placeholder }: SelectProps): JSX.Element => {
+interface OptionsProps {
+  options: OptionItem[];
+  onClick: (value: OptionItem['value']) => void;
+}
+const Options = memo(function Options({ options, onClick }: OptionsProps) {
+  console.log('@@@@', 'RENDER');
+  return (
+    <ul className={styles['select-options']}>
+      {options.map(({ title, value }, index) => (
+        <li className={cn(styles.option)} key={index} value={value} onClick={() => onClick(value)} tabIndex={0}>
+          {title}
+        </li>
+      ))}
+    </ul>
+  );
+});
+
+export const Select = ({ options, selectedItem, onClick, placeholder }: SelectProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
+  useOutsideClick(selectRef, () => setIsOpen(false));
 
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const { target } = e;
-      if (target instanceof Node && !ref.current?.contains(target)) {
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener('click', handleClick);
-
-    return () => {
-      window.removeEventListener('click', handleClick);
-    };
-  }, [isOpen, onClose]);
-
-  const handleOptionClick = (value: OptionItem['value']) => {
-    setIsOpen(false);
-    onClick?.(value);
-  };
+  const handleOptionClick = useCallback(
+    (value: OptionItem['value']) => {
+      setIsOpen(false);
+      onClick?.(value);
+    },
+    [onClick]
+  );
 
   const handlePlaceHolderClick: MouseEventHandler<HTMLDivElement> = () => {
     setIsOpen((prev) => !prev);
   };
 
+  useEffect(() => {
+    const ref = selectRef.current;
+    if (!ref) return;
+
+    const handleClick = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        setIsOpen((prev) => !prev);
+      }
+    };
+
+    ref.addEventListener('keydown', handleClick);
+
+    return () => {
+      ref.removeEventListener('keydown', handleClick);
+    };
+  }, []);
+
   return (
-    <div className={styles.select} ref={ref}>
+    <div className={styles.select} ref={selectRef} data-is-active={isOpen}>
       <div className={styles.select__controller}>
-        <span className={styles.selected__text}>{selected?.title || placeholder}</span>
+        <span className={styles.selected__text}>{selectedItem?.title || placeholder}</span>
         <div className={styles.select__arrow} onClick={handlePlaceHolderClick} role="button" tabIndex={0}>
           <Arrow />
         </div>
       </div>
-      {isOpen && (
-        <ul className={styles['select-options']}>
-          {options.map((option, index) => (
-            <Option key={index} option={option} onClick={handleOptionClick} />
-          ))}
-        </ul>
-      )}
+      {isOpen && <Options onClick={handleOptionClick} options={options} />}
     </div>
   );
 };

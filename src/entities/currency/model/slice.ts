@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface CurrencyState {
   currencyName: string;
@@ -12,10 +12,10 @@ export const currencySlice = createSlice({
   name: 'currency',
   initialState,
   reducers: {
-    addCurrencyName: (state, action) => {
+    setCurrencyName: (state, action: PayloadAction<string>) => {
       state.currencyName = action.payload;
     },
   },
 });
 
-export const { addCurrencyName } = currencySlice.actions;
+export const { setCurrencyName } = currencySlice.actions;

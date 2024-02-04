@@ -20,4 +20,5 @@
     },
   },
   "exclude": ["config"],
+  "include": ["**/*.ts", "**/*.tsx"],
 }

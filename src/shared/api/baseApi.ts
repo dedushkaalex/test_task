@@ -6,6 +6,6 @@ const { CURRENCIES } = API_TAGS;
 export const baseApi = createApi({
   tagTypes: [CURRENCIES],
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://api.coinbase.com/v2' }),
+  baseQuery: fetchBaseQuery({ baseUrl: '/' }),
   endpoints: () => ({}),
 });

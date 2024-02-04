@@ -5,7 +5,7 @@ import { OptionItem } from 'shared/ui/Select/model/types';
 const currencyApiSlice = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getCurrencies: build.query<OptionItem[], void>({
-      query: () => '/currencies',
+      query: () => 'https://api.coinbase.com/v2/currencies',
       transformResponse: (data: CurrenciesResponse) => {
         const arrCurrency = data.data;
 
