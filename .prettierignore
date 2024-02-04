@@ -1,0 +1,9 @@
+dist
+node_modules
+.husky
+webpack.config.ts
+.lintstagedrc
+public
+.gitkeep
+.fttemplates
+config
