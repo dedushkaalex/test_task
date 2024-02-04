@@ -1,70 +1,96 @@
-import { useCallback, useRef, useState } from 'react';
 import cn from 'classnames';
 import styles from './Select.module.css';
-import { useOutsideClick } from 'shared/lib/hooks/useOutsideClick';
-// import { OptionItem } from '../Select/model/types';
-
-interface SelectProps {
+import { useSelect } from './hooks/useSelect';
+import Arrow from 'shared/images/arrow.svg';
+import { FieldProps, FilterOptionFunc, Option } from './model/types';
+export interface SelectProps extends Omit<FieldProps, 'value' | 'onChange'> {
   options: Option[];
-  disabled?: boolean;
-  onClick: (option: Option) => void;
+  value: Option | null;
+  onChange: (option: Option) => void;
+  filterOption?: FilterOptionFunc;
+  Сomponents?: {
+    NoOptionsMessage?: React.ComponentType;
+    Option?: React.ComponentType<{ option: Option }>;
+    SelectedValue?: React.ComponentType<{ option: Option }>;
+  };
 }
+const defaultFilterOption: FilterOptionFunc = (option, inputValue) =>
+  option.label.toLowerCase().includes(inputValue.toLowerCase());
 
-interface Option {
-  label: string;
-  value: string | number;
-}
+export const Select = ({
+  options,
+  onChange,
+  value,
+  filterOption = defaultFilterOption,
+  Сomponents,
+  disabled,
+  loading,
+}: SelectProps): JSX.Element => {
+  const { refs, functions, state } = useSelect({
+    options,
+    filterOption,
+    value,
+    onChange,
+  });
+  const showOption = !!value;
+  const optionItems = state.filteredOptions.map((option) => {
+    const isSelected = state.searchSelectedOption.id === option.id;
 
-interface OptionsProps {
-  options: Option[];
-  onClick: (option: Option) => void;
-}
-
-const Options = ({ options, onClick }: OptionsProps): JSX.Element => {
-  console.log('@@@@', options);
-  return (
-    <ul className={styles.option_list}>
-      {options.map((option) => {
-        return (
-          <li className={cn(styles.option)} key={option.value} onClick={() => onClick(option)}>
-            {option.value}
-          </li>
-        );
-      })}
-    </ul>
-  );
-};
-
-export const Select = ({ options, disabled, onClick }: SelectProps): JSX.Element => {
-  const [controllerValue, setControllerValue] = useState(options[0].value ?? '');
-  const [showOptions, setShowOptions] = useState(false);
-  const selectRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(selectRef, () => setShowOptions(false));
-
-  const handleClick = useCallback(
-    (option: Option) => {
-      onClick(option);
-      setControllerValue(option.value);
-    },
-    [onClick]
-  );
-
-  const SelectIcon = useCallback(
-    () => (
-      <div aria-hidden="true" role="button" onClick={() => !disabled && setShowOptions(!showOptions)}>
-        <div className={styles.arrow_icon} />
-      </div>
-    ),
-    [showOptions, disabled]
-  );
+    return (
+      <li
+        key={option.id}
+        role="option"
+        aria-selected={value?.id === option.id}
+        aria-hidden
+        className={cn(styles.option, {
+          [styles.option__active]: isSelected,
+        })}
+        onClick={() => functions.onOptionClick(option)}
+      >
+        {Сomponents?.Option ? <Сomponents.Option option={option} /> : option.label}
+      </li>
+    );
+  });
 
   return (
-    <div className={styles.select} ref={selectRef}>
-      <div className={styles.select__controller}>
-        <span className={styles.selected__text}>{controllerValue}</span>
-        <SelectIcon />
+    <div aria-hidden aria-disabled={disabled} className={styles.select} ref={refs.selectRef}>
+      <div
+        aria-hidden
+        onClick={() => {
+          if (disabled || loading) return;
+          functions.onSelectClick();
+        }}
+        className={styles.select__controller}
+      >
+        <input
+          autoComplete="off"
+          type="text"
+          disabled={disabled}
+          className={styles.input}
+          ref={refs.inputRef}
+          value={state.inputValue}
+          onChange={functions.searchInputHandler}
+        />
+        <div className={styles.select__arrow}>
+          <Arrow />
+        </div>
       </div>
-      {showOptions && <Options options={options} onClick={handleClick} />}
+      {state.showOptions ||
+        (showOption && (
+          <div className={styles.option_label}>
+            {Сomponents?.SelectedValue ? <Сomponents.SelectedValue option={value} /> : value.label}
+          </div>
+        ))}
+      {state.showOptions && (
+        <ul className={styles['select-options']}>
+          {!state.filteredOptions.length && (
+            <div className={styles.no_option}>
+              {Сomponents?.NoOptionsMessage ? <Сomponents.NoOptionsMessage /> : 'no option...'}
+            </div>
+          )}
+          {optionItems}
+        </ul>
+      )}
     </div>
   );
 };

@@ -1,17 +1,7 @@
 :root {
   --color-white: #fff;
-  --color-grey-300: #c3c3c3;
+  --color-grey-100: #f0efef;
   --color-black: #000;
-
-  /*border*/
-  --system-radius-sm: 5px;
-
-  /*transition*/
-  --trans-all-5: all 0.5s ease;
-  --trans-all-3: all 0.3s ease;
-
-  /*images*/
-  --images-select-arrow: url('../../shared/images/arrow.svg')
 }
 
 *,

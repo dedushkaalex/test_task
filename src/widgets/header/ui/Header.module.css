@@ -47,10 +47,16 @@
   }
 
   .container {
-    padding: 0 11px;
+    padding: 0 1.1rem;
   }
 
   .header__logo {
     margin-left: 0;
+  }
+
+  .header__row__box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }

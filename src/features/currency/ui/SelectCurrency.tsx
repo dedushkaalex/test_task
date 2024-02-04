@@ -1,25 +1,20 @@
-import { useAppDispatch, useAppSelector } from 'app/providers/store/store';
+import { useAppDispatch } from 'app/providers/store/store';
 import { useGetCurrenciesQuery } from 'entities/currency/api';
 import { setCurrencyName } from 'entities/currency/model/slice';
-import { useCallback } from 'react';
-import { Select } from 'shared/ui/Select';
-// import { OptionItem } from 'shared/ui/Select/model/types';
+import { useCallback, useState } from 'react';
+import { Select } from 'shared/ui/CustomSelect/Select';
+import type { Option } from 'shared/ui/CustomSelect/model';
 
 export const SelectCurrency = (): JSX.Element => {
-  const currency = useAppSelector((state) => state.currency.currencyName);
+  const [curr, setCurr] = useState<Option>();
+
   const dispatch = useAppDispatch();
   const { data = [] } = useGetCurrenciesQuery();
-  const selectedCurrency = data?.find((item) => item.value === currency);
-  const handleCurrencySelect = useCallback((value: string) => {
-    // onClick?.(selectedCurrency);
-    dispatch(setCurrencyName(value));
+
+  const handleCurrencySelect = useCallback((option: Option) => {
+    setCurr(option);
+    dispatch(setCurrencyName(option.value));
   }, []);
 
-  return (
-    <Select
-      options={data || []}
-      selectedItem={!selectedCurrency ? data[0] : selectedCurrency}
-      onClick={handleCurrencySelect}
-    />
-  );
+  return <Select options={data || []} onChange={(option) => handleCurrencySelect(option)} value={curr ?? data[0]} />;
 };
